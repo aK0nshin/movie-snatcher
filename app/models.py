@@ -11,7 +11,6 @@ from sqlalchemy.orm import relationship
 # App imports
 from app import db_manager
 
-# alias
 Base = db_manager.Model
 
 

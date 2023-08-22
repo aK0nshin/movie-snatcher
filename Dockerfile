@@ -5,6 +5,7 @@ RUN apt-get update \
 RUN set -ex && pip3 install pip --upgrade
 RUN pip install poetry
 COPY . ./
+COPY /db/*.sql /docker-entrypoint-initdb.d/
 RUN poetry config virtualenvs.create false
 RUN poetry install --only main
 EXPOSE 5000

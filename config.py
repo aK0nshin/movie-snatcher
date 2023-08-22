@@ -8,10 +8,9 @@ load_dotenv(os.path.join(basedir, ".env"))
 class Config(object):
     FLASK_RUN_HOST = os.environ.get("FLASK_RUN_HOST")
     SECRET_KEY = os.environ.get("SECRET_KEY")
-    SESSION_COOKIE_HTTPONLY = os.environ.get("SESSION_COOKIE_HTTPONLY")
-    REMEMBER_COOKIE_HTTPONLY = os.environ.get("REMEMBER_COOKIE_HTTPONLY")
-    SESSION_COOKIE_SAMESITE = os.environ.get("SESSION_COOKIE_SAMESITE")
+
     ELASTICSEARCH_HOST = os.environ.get("ELASTICSEARCH_HOST")
+
     KINOPOISK_HOST = os.environ.get("KINOPOISK_HOST")
     KINOPOISK_TOKEN = os.environ.get("KINOPOISK_TOKEN")
     MOVIE_ID_PATTERN = os.environ.get("MOVIE_ID_PATTERN")
