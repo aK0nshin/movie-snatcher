@@ -1,0 +1,11 @@
+### GET Hello World
+GET http://localhost:5000
+Accept: application/json
+
+### POST Film
+POST http://localhost:5000/api/v1/movies
+Content-Type: application/json
+
+{
+  "film_url": "https://www.kinopoisk.ru/film/435"
+}

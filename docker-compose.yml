@@ -1,0 +1,28 @@
+---
+services:
+  app:
+    build: .
+    command: python3 -m flask run
+    env_file: .env
+    ports:
+        - "5000:5000"
+    depends_on:
+        - postgres
+        - elasticsearch
+
+  postgres:
+    image: postgres:15
+    ports:
+      - "5432:5432"
+    volumes:
+      - .:/app
+      - ./db/postgres-init.sql:/docker-entrypoint-initdb.d/init.sql
+    environment:
+      LC_ALL: C.UTF-8
+      POSTGRES_PASSWORD: 3x4mpl34pp
+
+  elasticsearch:
+    image: elasticsearch:8.8.1
+    ports:
+      - "9200:9200"
+      - "9300:9300"

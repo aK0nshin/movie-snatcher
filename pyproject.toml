@@ -1,0 +1,22 @@
+[tool.poetry]
+name = "movie-snatcher"
+version = "0.1.0"
+description = ""
+authors = ["aK0nshin <kon2work@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+flask = "^2.3.2"
+flask-sqlalchemy = "^3.0.5"
+requests = "^2.31.0"
+flask-elasticsearch = "^0.2.5"
+python-dotenv = "^1.0.0"
+psycopg2-binary = "^2.9.7"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^7.4.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
