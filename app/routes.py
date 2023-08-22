@@ -30,3 +30,7 @@ def shutdown_session(response_or_exc):
 bp.add_url_rule(
    "/api/v1/movies", view_func=movies_views.movie_add, methods=["POST"]
 )
+
+bp.add_url_rule(
+   "/api/v1/movies/search", view_func=movies_views.movie_search, methods=["POST"]
+)

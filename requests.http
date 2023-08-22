@@ -1,11 +1,15 @@
-### GET Hello World
-GET http://localhost:5000
-Accept: application/json
-
-### POST Film
+### POST Snatch a movie
 POST http://localhost:5000/api/v1/movies
 Content-Type: application/json
 
 {
   "film_url": "https://www.kinopoisk.ru/film/435"
+}
+
+### POST Search movies
+POST http://localhost:5000/api/v1/movies/search
+Content-Type: application/json
+
+{
+  "search_query": "Хэнкс"
 }

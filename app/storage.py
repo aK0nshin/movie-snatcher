@@ -1,4 +1,4 @@
-from app import db_manager
+from app import db_manager, es_manager
 from app.models import Movie, Country, Genre, Actor
 
 
@@ -7,6 +7,11 @@ def get_movie_by_id(movie_id: int) -> Movie | None:
     if not result:
         return None
     return result[0]
+
+
+def get_movies_by_ids(movie_ids: list[int]) -> list[Movie]:
+    result = db_manager.session.execute(db_manager.select(Movie).filter(Movie.id.in_(movie_ids))).first()
+    return list(result)
 
 
 def store_movie(movie_id: int, movie_info: dict) -> Movie:
@@ -59,3 +64,23 @@ def store_movie(movie_id: int, movie_info: dict) -> Movie:
     db_manager.session.add(movie)
     db_manager.session.commit()
     return movie
+
+
+def index_movie(movie: Movie):
+    return es_manager.index(index="movies", id=movie.id, body={
+        'name': movie.name,
+        'description': movie.description,
+        'actors': ' '.join(x.name for x in movie.actors)
+    })
+
+
+def find_movies(search_query: str) -> list[Movie]:
+    result = es_manager.search(index="movies", body={
+        "query": {
+            "multi_match": {
+                "query": search_query,
+                "fields": ["name", "description", "actors"]
+            }
+        }
+    })
+    return get_movies_by_ids([hit['_id'] for hit in result['hits']['hits']])
