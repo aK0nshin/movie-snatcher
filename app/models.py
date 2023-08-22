@@ -1,66 +1,74 @@
+from datetime import datetime
+
 from sqlalchemy import (
     Integer,
     Column,
     Text,
     DateTime,
     ForeignKey,
-    func,
+    func, Table, inspect,
 )
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship, Mapped, mapped_column
 
-# App imports
 from app import db_manager
 
 Base = db_manager.Model
 
+movie_country = Table(
+    "movie_country",
+    Base.metadata,
+    Column("movie_id", ForeignKey("movies.id")),
+    Column("country_id", ForeignKey("countries.id")),
+)
 
-class Movie(Base):
-    __tablename__ = "movies"
-    id = Column(Integer, primary_key=True)
-    created_at = Column(DateTime, server_default=func.now())
-    name = Column(Text, nullable=False)
-    description = Column(Text, nullable=False)
-    premiere = Column(DateTime, nullable=True)
-    director = Column(Text, nullable=False)
-    countries = relationship("Country", back_populates="movies")
-    genres = relationship("Genre", back_populates="movies")
-    actors = relationship("Actor", back_populates="movies")
+movie_genre = Table(
+    "movie_genre",
+    Base.metadata,
+    Column("movie_id", ForeignKey("movies.id")),
+    Column("genre_id", ForeignKey("genres.id")),
+)
+
+movie_actor = Table(
+    "movie_actor",
+    Base.metadata,
+    Column("movie_id", ForeignKey("movies.id")),
+    Column("actor_id", ForeignKey("actors.id")),
+)
 
 
 class Country(Base):
     __tablename__ = "countries"
-    id = Column(Integer, primary_key=True)
-    name = Column(Text, nullable=False)
-
-
-class MovieCountry(Base):
-    __tablename__ = "movies_x_countries"
-    movie_id = Column(Integer, ForeignKey("movies.id"), primary_key=True)
-    country_id = Column(Integer, ForeignKey("countries.id"), primary_key=True)
-    assigned_at = Column(DateTime, nullable=False, server_default=func.now())
+    id: Mapped[int] = mapped_column(primary_key=True)
+    name: Mapped[str] = Column(Text, nullable=False)
+    movies: Mapped[set['Movie']] = relationship('Movie', secondary=movie_country, back_populates='countries')
 
 
 class Genre(Base):
     __tablename__ = "genres"
-    id = Column(Integer, primary_key=True)
-    name = Column(Text, nullable=False)
-
-
-class MovieGenre(Base):
-    __tablename__ = "movies_x_genres"
-    movie_id = Column(Integer, ForeignKey("movies.id"), primary_key=True)
-    Genre_id = Column(Integer, ForeignKey("genres.id"), primary_key=True)
-    assigned_at = Column(DateTime, nullable=False, server_default=func.now())
+    id: Mapped[int] = mapped_column(primary_key=True)
+    name: Mapped[str] = Column(Text, nullable=False)
+    movies: Mapped[set['Movie']] = relationship('Movie', secondary=movie_genre, back_populates='genres')
 
 
 class Actor(Base):
     __tablename__ = "actors"
-    id = Column(Integer, primary_key=True)
-    name = Column(Text, nullable=False)
+    id: Mapped[int] = mapped_column(primary_key=True)
+    name: Mapped[str] = Column(Text, nullable=False)
+    movies: Mapped[set['Movie']] = relationship('Movie', secondary=movie_actor, back_populates='actors')
 
 
-class MovieActor(Base):
-    __tablename__ = "movies_x_actors"
-    movie_id = Column(Integer, ForeignKey("movies.id"), primary_key=True)
-    actor_id = Column(Integer, ForeignKey("actors.id"), primary_key=True)
-    assigned_at = Column(DateTime, nullable=False, server_default=func.now())
+class Movie(Base):
+    __tablename__ = "movies"
+    id: Mapped[int] = Column(Integer, primary_key=True)
+    created_at: Mapped[datetime] = Column(DateTime, server_default=func.now())
+    name: Mapped[str] = Column(Text, nullable=False)
+    description: Mapped[str] = Column(Text, nullable=False)
+    premiere: Mapped[datetime] = Column(DateTime, nullable=True)
+    director: Mapped[str] = Column(Text, nullable=False)
+    countries: Mapped[set[Country]] = relationship('Country', secondary=movie_country, back_populates='movies')
+    genres: Mapped[set[Genre]] = relationship('Genre', secondary=movie_genre, back_populates='movies')
+    actors: Mapped[set[Actor]] = relationship('Actor', secondary=movie_actor, back_populates='movies')
+
+    def asdict(self):
+        return {c.key: getattr(self, c.key)
+                for c in inspect(self).mapper.column_attrs}
